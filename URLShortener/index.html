@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple URL Shortener</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css" />
+</head>
+
+<body>
+    <header>
+        <h1>Simple URL Shortener</h1>
+    </header>
+    <main>
+        <section>
+            <aside id="urlForm" style="width: 25rem">
+                <label>
+                    Enter your link below to retrieve its short URL
+                    <input type="url"
+                           id="url"
+                           name="url"
+                           style="width: 22rem; margin: 0.5rem 0" />
+                </label>
+
+                <button type="button"
+                        onclick="submitUrl()"
+                        style="padding: 0.5rem 1rem">
+                    Shorten
+                </button>
+                <p id="urlResult"></p>
+            </aside>
+        </section>
+        <section>
+            <div id="urlGetAll"></div>
+        </section>
+    </main>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        getAllUrl();
+      });
+
+      document.getElementById('url').addEventListener('keyup', function (event) {
+          if (event.code === 'Enter') {
+            event.preventDefault();
+            submitUrl();
+          }
+        });
+
+      function getAllUrl() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/getAll', true);
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              const entries = JSON.parse(xhr.responseText).entries;
+              const section = document.getElementById('urlGetAll');
+              let newLine = '';
+              section.innerHTML = '';
+
+              const tableTemplate = '<table><thead><tr><th>Url Chunk</th><th>Url</th></tr></thead><tbody>$BODY$</tbody></table>';
+
+              entries.forEach(function (entry) {
+                var url = `${window.location.host}/${entry['urlChunk']}`;
+                newLine += `<tr><td><a href='${window.location.protocol}//${url}' target='_blank'>${url}</a></td><td>${entry['url']})</td></tr>`;
+              });
+
+              section.innerHTML = tableTemplate.replace('$BODY$', newLine);
+            } else {
+              alert(xhr.responseText);
+            }
+          }
+        };
+
+        xhr.send(JSON.stringify({ url: document.getElementById('url').value }));
+      }
+
+      function submitUrl() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/url', true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              const url = JSON.parse(xhr.responseText).url;
+              const section = document.getElementById('urlResult');
+              section.innerHTML = `<a id="link" href="${url}">${url}</a>`;
+              getAllUrl();
+            } else {
+              alert(xhr.responseText);
+            }
+          }
+        };
+
+        xhr.send(JSON.stringify({ url: document.getElementById('url').value }));
+      }
+    </script>
+</body>
+</html>
