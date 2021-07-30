@@ -7,4 +7,6 @@ Baseado no artigo https://medium.com/geekculture/building-a-url-shortener-web-ap
 - LiteDB (https://www.litedb.org/)
 - MVP.CSS (https://andybrewer.github.io/mvp/)
 - Api retornando arquivo template html (https://localhost:49155/short)
-- MapFallback() para atribuir rota genérica da api (Startup.cs)
+- MapFallback() para atribuir rota genÃ©rica da api (Startup.cs)
+
+![Working](https://miro.medium.com/proxy/0*OjpUfYpqjQvn_LrU.gif)
